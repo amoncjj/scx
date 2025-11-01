@@ -1,0 +1,19 @@
+[build-system]
+requires = ["hatchling>=1.20"]
+build-backend = "hatchling.build"
+
+[project]
+name = "scx"
+version = "0.1.0"
+description = "SCX models that supports vllm"
+readme = "README.md"
+authors = [{ name = "yuanmu"}]
+dependencies = [
+    "vllm>=0.11.0",
+]
+
+[project.entry-points."vllm.general_plugins"]
+scx_plugin = "scx:init_vllm_plugin"
+
+[tool.hatch.build.targets.wheel]
+packages = ["scx"]

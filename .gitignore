@@ -1,2 +1,6 @@
 log/
 __pycache__/
+results_*.json
+*.log
+.DS_Store
+*.txt
