@@ -74,6 +74,67 @@ for step in range(5):
     logits = output.logits
 ```
 
+## Implementations
+
+This repository contains two implementations of the SCX algorithm:
+
+### 1. Standard Implementation (scx/)
+
+The core SCX implementation compatible with standard transformers models (see Quick Start above for usage).
+
+### 2. vLLM Implementation (scx-vllm/)
+
+A specialized implementation for the [vLLM](https://github.com/vllm-project/vllm) inference framework that enables high-performance confidential serving with minimal overhead.
+
+**Key Features:**
+- Seamless integration with vLLM through plugin architecture
+- Support for Qwen2 and Llama model families
+- Layer-level configuration for selective SCX encoding
+- Environment variable-based configuration for easy A/B testing
+- Comprehensive benchmarking tools for throughput and accuracy
+
+**Quick Start with vLLM:**
+
+```bash
+# Install vLLM and dependencies
+pip install vllm transformers datasets
+
+# Install SCX vLLM plugin
+cd scx-vllm
+pip install -e .
+```
+
+```python
+# Configure SCX via environment variables or Python API
+import os
+os.environ["SCX_ENC_LAYERS"] = "0,27"  # Enable SCX on layers 0 and 27
+os.environ["SCX_SECURE_DEVICE"] = "cpu"
+os.environ["SCX_ENABLE_DEBUG"] = "False"
+
+from vllm import LLM, SamplingParams
+from scx.keys import scx_env_init
+
+# Initialize SCX configuration
+scx_env_init(
+    enc_layers="0,27",
+    secure_device="cpu",
+    enable_debug=False
+)
+
+# Use vLLM as usual - SCX is automatically applied
+llm = LLM(
+    model="/path/to/model",
+    dtype="bfloat16",
+    tensor_parallel_size=1,
+    max_model_len=38000,
+)
+
+sampling = SamplingParams(max_tokens=512, temperature=0.0)
+outputs = llm.generate(["Your prompt here"], sampling)
+```
+
+For detailed documentation, installation instructions, and benchmarking guides, see [`scx-vllm/README.md`](scx-vllm/README.md).
+
 ## Advanced Usage
 
 ### Model Comparison Test
